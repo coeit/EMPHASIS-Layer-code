@@ -91,21 +91,6 @@ module.exports = class Plant {
         this.harvesting = harvesting;
     }
 
-    /*static async readById(plantURI, experimentURI) {
-        let plantURIencoded = encodeURIComponent(plantURI);
-        let loginResponse = (await phisLogin.login()).data.session_token
-        console.log(JSON.stringify(loginResponse))
-        let plantResponse = await axios.get(phisPlantBaseURL + plantURIencoded, {
-            params: {
-                experimentURI: experimentURI,
-                sessionId: loginResponse
-            }
-        })
-        let plant = new Plant(plantResponse.data.result.data[0])
-        console.log(JSON.stringify(plant));
-        return plant;
-    }*/
-
     static readById (plantURI, experimentURI) {
         try {
             let plant = this.readByIdImpl(plantURI, experimentURI);
@@ -118,15 +103,17 @@ module.exports = class Plant {
 
     static async readByIdImpl(plantURI, experimentURI){
         let plantURIencoded = encodeURIComponent(plantURI);
-    
         let plantResponse = await axios.get(phisGlobals.PLANT_BASE_URL + plantURIencoded, {
             params: {
                 experimentURI : experimentURI,
                 sessionId: await loginHandler.getSessionToken()
             }
         });
+        /*console.log("\n\n" + Object.keys(plantResponse));
+        console.log("\n\n" + JSON.stringify(plantResponse.status));
+        console.log("\n\n" + JSON.stringify(plantResponse.statusText));*/
+
         let plant = new Plant(plantResponse.data.result.data[0]);
-        //console.log(JSON.stringify(plant));
         return plant;
     }
 
@@ -138,14 +125,7 @@ module.exports = class Plant {
         throw new Error('countPlants is not implemented');
     }
 
-    static async readAll(search, order, pagination) {
-        //validate experimentURI
-        //validate order: throw error: order argument not supported by backend breedingAPI
-
-        //validate search is not undefined (throw error: specify experimentURI)
-        //first implementation: allow only the following search
-        //search: {field: experiment, value: {type: "String", value: "my_expURI"}, operator: eq}
-
+    static readAll(search, order, pagination) {
         if (pagination === undefined) {
             throw new Error('You must use pagination for this request');
         }
@@ -161,6 +141,16 @@ module.exports = class Plant {
         if (order !== undefined) {
             throw new Error('order argument not supported by backend breedingAPI')
         }
+        try {
+            let plants = this.readAllImpl(search, order, pagination);
+            return plants;
+        } catch (error) {
+            console.log(error);
+            //check if Status code 401: if yes retry
+        } // else throw error
+    }
+
+    static async readAllImpl(search, order, pagination) {
 
         let plantResponse = await axios.get(phisGlobals.PLANT_BASE_URL, {
             params: {
@@ -177,11 +167,7 @@ module.exports = class Plant {
             plants.push(plantResponse.data.result.data[i])
         }
 
-        //console.log(JSON.stringify(plants));
         return plants;
-
-        //throw new Error('Read all plants is not implemented');
-
     }
 
     static addOne(input) {
