@@ -1,0 +1,23 @@
+{
+    "model" : "location",
+    "storageType" : "webservice",
+    "attributes" : {
+        "abbreviation": "String",
+        "name": "String",
+        "countryCode": "String",
+        "altitude": "String",
+        "longitude": "String",
+        "latitude": "String",
+        "countryName": "String",
+        "locationDbId": "String"
+    },
+    "associations" : {
+        "studies" : {
+            "type" : "to_one",
+            "target" : "study",
+            "targetKey" : "studyId",
+            "targetStorageType" : "webservice",
+            "label" : "studyDbId"
+        }
+    }
+}

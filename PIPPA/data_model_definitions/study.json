@@ -1,0 +1,26 @@
+{
+    "model" : "study",
+    "storageType" : "webservice",
+    "attributes" : {
+        "documentationURL": "String",
+        "studyDbId": "String",
+        "active": "Boolean",
+        "trialName": "String",
+        "studyType": "String",
+        "studyName": "String",
+        "trialDbId": "String",
+        "endDate": "Date",
+        "studyDescription": "String",
+        "startDate": "Date"
+    },
+    "associations" : {
+        "locations" : {
+            "type" : "to_one",
+            "target" : "location",
+            "targetKey" : "locationId",
+            "targetStorageType" : "webservice",
+            "label" : "locationDbId"
+        }
+    }
+
+}
